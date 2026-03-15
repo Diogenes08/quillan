@@ -1,0 +1,6 @@
+Write the prose for this story beat. Follow the scope contract and constraints exactly.
+
+{context}
+
+Write {word_count} words of vivid, immersive prose for this beat.
+Output only the story prose.

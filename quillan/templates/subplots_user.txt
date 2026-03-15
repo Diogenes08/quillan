@@ -1,0 +1,26 @@
+Generate a Subplot Register YAML document defining the sub-arcs in this story.
+
+Story idea:
+{idea}
+
+Creative Brief:
+{brief}
+
+Outline:
+{outline}
+
+Output YAML:
+```yaml
+subplots:
+  - name: "The Forged Letter"
+    type: "mystery"
+    characters: ["Alice", "Marcus"]
+    opens_at: "C1-S2-B1"
+    closes_at: "C4-S1-B3"
+    main_plot_intersection: "Reveals antagonist's motive at midpoint"
+    beats: ["C1-S2-B1", "C2-S1-B3", "C4-S1-B3"]
+```
+
+If the story has no significant subplots, return `subplots: []`.
+Subplot types: romance, mystery, rivalry, redemption, conspiracy, family, mentorship, other.
+Only include subplots that are clearly supported by the outline — do not invent them.

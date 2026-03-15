@@ -1,0 +1,5 @@
+Based on the Universe Bible below, write World Axioms covering:
+Physics & Magic, Social Structure, Technology Level.
+
+Universe Bible:
+{bible}

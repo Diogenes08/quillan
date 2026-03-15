@@ -1,0 +1,13 @@
+Generate a voice profile for the following character. Base it on all available information below.
+
+## Character Name
+
+{character_name}
+
+## Character Arc and Role
+
+{arc_info}
+
+## Story Context
+
+{story_context}

@@ -1,0 +1,11 @@
+Update the story continuity summary with events from this new beat.
+
+Current summary:
+{summary}
+
+New beat ({beat_id}) prose excerpt:
+{prose_excerpt}
+
+Write an updated summary that incorporates the new events.
+Keep it concise (under {max_chars} characters).
+Output only the updated summary text, no extra commentary.

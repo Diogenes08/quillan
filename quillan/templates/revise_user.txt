@@ -1,0 +1,13 @@
+## Beat Specification
+
+{spec}
+
+## Existing Draft
+
+{existing_draft}
+
+## Revision Notes
+
+{revision_notes}
+
+Apply the revision notes to the existing draft and return the complete revised prose.

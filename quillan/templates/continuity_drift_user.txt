@@ -1,0 +1,13 @@
+Review the following story state, open threads, and recent beat drafts for continuity drift. Identify any factual inconsistencies or contradictions.
+
+## Current Story State
+
+{state}
+
+## Open Threads
+
+{threads}
+
+## Recent Beat Drafts
+
+{drafts}

@@ -1,0 +1,10 @@
+Update the list of open story threads with events from this new beat.
+
+Current open threads:
+{threads}
+
+New beat ({beat_id}) prose excerpt:
+{prose_excerpt}
+
+Update the list: resolve completed threads, add new ones.
+Format as a markdown list. Max {max_chars} characters.

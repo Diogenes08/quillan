@@ -1,0 +1,26 @@
+Create a detailed story outline in YAML format for the story described below.
+
+The outline must have this structure:
+```yaml
+title: "Story Title"
+genre: "Genre"
+theme: "Central theme"
+chapters:
+  - chapter: 1
+    title: "Chapter Title"
+    beats:
+      - beat_id: "C1-S1-B1"
+        title: "Beat Title"
+        goal: "What this beat must accomplish"
+        setting: "Where/when"
+        characters: ["Character1", "Character2"]
+        word_count_target: 1500
+```
+
+Beat IDs must follow the pattern: C<chapter>-S<section>-B<beat>, e.g. C1-S1-B1.
+
+Story seed:
+{seed}
+
+Creative Brief (voice, tone, themes — honour these):
+{brief}

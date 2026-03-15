@@ -1,0 +1,5 @@
+Based on the Universe Bible below, write Canon Rules for this world.
+List Hard Rules (never violate) and Soft Rules (bend with care).
+
+Universe Bible:
+{bible}

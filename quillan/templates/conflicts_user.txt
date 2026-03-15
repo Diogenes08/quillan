@@ -1,0 +1,30 @@
+Generate a Conflict Map YAML document for this story, defining the core dramatic tensions.
+
+Story idea:
+{idea}
+
+Creative Brief:
+{brief}
+
+Outline:
+{outline}
+
+Output YAML:
+```yaml
+protagonist_goal: "What the protagonist fundamentally wants or needs"
+antagonist: "Name or force opposing the protagonist"
+antagonist_goal: "What the antagonist wants (may conflict with protagonist)"
+core_conflict: "The essential dramatic tension in one sentence"
+conflict_type: "internal/external/societal/nature/fate"
+resolution_arc: "How the conflict is resolved or transformed by story's end"
+antagonist_pressure:
+  - beat_id: "C1-S2-B1"
+    pressure: "How the antagonist force manifests in this beat"
+  - beat_id: "C2-S1-B3"
+    pressure: "Escalation of antagonist pressure"
+stakes: "What the protagonist loses if they fail"
+```
+
+conflict_type must be one of: internal, external, societal, nature, fate, interpersonal.
+Include antagonist_pressure entries only for beats where the conflict is directly felt.
+If the antagonist is an internal force (fear, addiction, trauma), set antagonist to that force.

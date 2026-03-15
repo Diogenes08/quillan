@@ -1,0 +1,11 @@
+Append a ledger entry for this beat to the continuity ledger.
+
+Current ledger (most recent entries):
+{ledger_tail}
+
+New beat: {beat_id}
+Key events:
+{prose_excerpt}
+
+Append a brief ledger entry (2-4 bullet points) for this beat.
+Output the complete updated ledger. Max {max_chars} characters total.

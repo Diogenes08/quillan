@@ -1,0 +1,10 @@
+This story idea is open-ended and needs more detail before planning:
+"{idea}"
+
+Missing elements: {missing}
+
+Write a Creative Brief Interview with 4–8 targeted questions that will gather what's missing. Format as a Markdown document titled "# Creative Brief Interview".
+Use numbered questions. Leave space for answers after each question with "**Answer:**".
+Focus on: emotional core, protagonist identity and arc endpoint, tone/atmosphere, themes, and plot structure.
+
+End with a note: "When done, save this file and re-run: quillan create <idea_file>"

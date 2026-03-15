@@ -1,0 +1,17 @@
+Read the beat prose below and extract state changes as a JSON patch.
+
+Output JSON with this exact structure:
+{{
+  "set": {{"path.to.key": "new value", ...}},
+  "append": {{"list.path": "item to append", ...}},
+  "delete": ["path.to.delete", ...]
+}}
+
+Use dot-notation for nested paths (e.g. "characters.Alice.location").
+Only include actual changes from the prose. If nothing changed, return empty objects.
+
+Beat prose:
+{prose}
+
+Current state summary:
+{state_summary}

@@ -1,0 +1,17 @@
+Compress the following world documents into a single focused Canon Packet for story generation.
+Maximum output: {max_chars} characters. Include only what story writers need to know.
+
+Universe Bible:
+{bible}
+
+Canon Rules:
+{rules}
+
+World Axioms:
+{axioms}
+
+Story Planning Notes:
+{story_planning}
+
+Prior Story Continuity (if any):
+{prior_story}

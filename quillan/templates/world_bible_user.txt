@@ -1,0 +1,6 @@
+You are a world-building assistant. Write a detailed Universe Bible for a story world
+based on the seed text below. Cover: Setting, History, Geography, Factions & Powers.
+Be specific and vivid. Output markdown.
+
+Seed:
+{seed}

@@ -1,0 +1,34 @@
+Generate a Character Arcs YAML document tracking each named character's trajectory.
+
+Story idea:
+{idea}
+
+Creative Brief:
+{brief}
+
+Outline:
+{outline}
+
+Output YAML:
+```yaml
+characters:
+  - name: "Alice"
+    arc_type: "positive_change"
+    starting_state: "fearful and isolated"
+    ending_state: "courageous and connected"
+    motivation: "Wants safety; learns that safety requires risk"
+    turning_points:
+      - beat_id: "C1-S1-B3"
+        label: "inciting wound"
+        description: "Her isolation is disrupted by an unwanted event"
+      - beat_id: "C3-S2-B1"
+        label: "low point"
+        description: "Betrayal confirms her fear was justified"
+      - beat_id: "C4-S1-B2"
+        label: "choice"
+        description: "Chooses trust over self-protection"
+```
+
+Include all named characters from the outline.
+arc_type must be one of: positive_change, negative_change, flat, transformational.
+turning_points should cover at least: wound/catalyst, low point, choice/resolution.

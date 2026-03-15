@@ -1,0 +1,5 @@
+Analyze the prose style of the following samples and return a structured JSON style fingerprint. Focus exclusively on craft-level observations that a fiction writer can apply when drafting new scenes in this style.
+
+SAMPLES:
+
+{samples}

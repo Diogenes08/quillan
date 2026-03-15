@@ -1,0 +1,43 @@
+Generate a Story Spine YAML document that maps the dramatic structure of this story.
+
+Story idea:
+{idea}
+
+Creative Brief:
+{brief}
+
+Outline (beat list):
+{outline}
+
+Output YAML:
+```yaml
+structure: "three_act"   # or five_act / hero_journey / freytag
+acts:
+  - act: 1
+    label: "Setup"
+    beats: ["C1-S1-B1", "C1-S1-B2"]
+    tension_range: [2, 4]
+  - act: 2
+    label: "Confrontation"
+    beats: ["C2-S1-B1", "C2-S1-B2"]
+    tension_range: [4, 9]
+  - act: 3
+    label: "Resolution"
+    beats: ["C3-S1-B1", "C3-S1-B2"]
+    tension_range: [9, 3]
+turning_points:
+  inciting_incident: "C1-S1-B2"
+  first_plot_point: "C2-S1-B1"
+  midpoint: "C2-S2-B1"
+  low_point: "C3-S1-B1"
+  climax: "C3-S2-B1"
+  resolution: "C3-S2-B2"
+beat_tension:
+  C1-S1-B1: 2
+  C1-S1-B2: 3
+  C2-S1-B1: 5
+```
+
+Assign each beat an integer tension level (1–10) in beat_tension.
+Every beat from the outline must appear in beat_tension.
+Beats must be distributed across acts — do not leave any act empty.

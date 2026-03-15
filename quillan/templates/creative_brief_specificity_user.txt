@@ -1,0 +1,24 @@
+Analyze the specificity of this story idea and determine whether it needs a creative interview to gather more details, or whether it contains enough detail to proceed.
+
+Output JSON exactly:
+{{
+  "specificity_score": 0.0,
+  "needs_interview": true,
+  "detected_signals": {{
+    "has_named_characters": false,
+    "has_explicit_theme": false,
+    "has_stated_tone": false,
+    "has_plot_structure": false
+  }}
+}}
+
+Rules:
+- specificity_score: 0.0 = completely vague, 1.0 = fully detailed
+- needs_interview: true if specificity_score < 0.5
+- has_named_characters: true if the idea names at least one character
+- has_explicit_theme: true if the idea states a theme (e.g. "about identity")
+- has_stated_tone: true if the idea describes tone/mood (e.g. "melancholic")
+- has_plot_structure: true if the idea describes an arc or plot points
+
+Story idea:
+{idea}

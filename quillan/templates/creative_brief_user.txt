@@ -1,0 +1,28 @@
+Generate a Creative Brief YAML document for the following story.
+
+Story idea:
+{idea}
+
+{answers_section}
+
+Output YAML:
+```yaml
+voice:
+  prose_style: "terse and visceral / lyrical and measured / etc."
+  pov: "close third / first / omniscient"
+  characteristic_patterns:
+    - "short declarative sentences"
+  avoid:
+    - "purple prose"
+tone_palette:
+  - register: "dread"
+    chapters: [1, 2, 3]
+themes:
+  - name: "identity under pressure"
+    description: "brief description"
+motifs:
+  - name: "broken glass"
+    meaning: "fractured self"
+    first_appears: "C1-S1-B2"
+arc_intent: "protagonist moves from X state to Y state"
+```

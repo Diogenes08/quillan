@@ -1,0 +1,54 @@
+Audit the following story beat draft against its specification.
+
+Beat spec:
+{spec}
+
+Beat draft:
+{draft}
+
+Continuity context (summary + threads):
+{continuity}
+
+{prose_analysis}
+Return a JSON object with exactly these fields:
+{{
+  "overall_pass": true/false,
+  "spec_validity": {{
+    "pass": true/false,
+    "notes": "string"
+  }},
+  "scope_contract": {{
+    "pass": true/false,
+    "missing_items": ["item1", ...],
+    "notes": "string"
+  }},
+  "rule_compliance": {{
+    "pass": true/false,
+    "violations": ["v1", ...],
+    "notes": "string"
+  }},
+  "continuity": {{
+    "pass": true/false,
+    "issues": ["issue1", ...],
+    "notes": "string"
+  }},
+  "tone_drift": {{
+    "pass": true/false,
+    "notes": "string"
+  }},
+  "voice_compliance": {{
+    "pass": true/false,
+    "notes": "Does prose match prose_style and avoid the listed patterns from the spec?"
+  }},
+  "pov_consistency": {{
+    "pass": true/false,
+    "notes": "Does the draft consistently use the pov_character specified in the spec?"
+  }},
+  "actual_word_count": 0,
+  "fix_list": ["Specific fix 1", "Specific fix 2", ...]
+}}
+
+For actual_word_count: count the words in the draft prose.
+For voice_compliance: check prose_style and avoid fields in the spec if present.
+For pov_consistency: check pov_character field in the spec if present.
+overall_pass should be false if actual_word_count is outside ±15%% of word_count_target.

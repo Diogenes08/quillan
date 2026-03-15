@@ -1,0 +1,6 @@
+The following story summary has grown too long. Distill it into a shorter,
+denser summary that preserves all critical facts, character states, and plot points.
+Maximum output: {max_chars} characters.
+
+Current summary:
+{summary}

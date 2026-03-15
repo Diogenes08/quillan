@@ -1,0 +1,55 @@
+Write a detailed beat spec for beat {beat_id} from this story outline.
+
+Output YAML:
+```yaml
+beat_id: "{beat_id}"
+title: "Beat Title"
+goal: "What this beat must accomplish narratively"
+setting: "Specific time and place"
+characters:
+  - name: "Character"
+    role: "protagonist/antagonist/supporting"
+    arc: "How this beat moves their arc"
+pov_character: "Name"
+tone: "e.g. tense/melancholic/triumphant"
+word_count_target: 1500
+emotional_beat: "e.g. dread building / sudden relief / quiet grief"
+theme_payoff: "Which story theme this beat develops or pays off"
+pacing: "fast"  # fast / medium / slow
+scope:
+  - "Event 1 that must happen"
+  - "Event 2 that must happen"
+out_of_scope:
+  - "Things to avoid"
+rules:
+  - "Style or continuity rule"
+dependencies: []
+arc_position: "{arc_position}"
+tension_level: {tension_level}
+active_motifs:
+{motifs_yaml}
+char_arc_notes:
+{char_arc_notes_yaml}
+antagonist_pressure: "{antagonist_pressure}"
+```
+
+Outline:
+{outline}
+
+Creative Brief (voice, tone, motifs — honour these):
+{brief}
+
+Story Spine context for this beat:
+  arc_position: {arc_position}
+  tension_level: {tension_level}/10
+
+Character arc context:
+{char_arc_notes_text}
+
+Conflict context:
+{conflict_text}
+
+Pacing note: Vary pacing across beats (fast/medium/slow) to avoid monotony.
+Recent beat pacing: {recent_pacing}
+
+Focus on beat: {beat_id}

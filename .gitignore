@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Type checking
+.mypy_cache/
+
+# Linting
+.ruff_cache/
+
+# IDE / editor temp files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.kate-swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project data (user content — not in repo)
+quillan_data/
+
+# Secrets / env overrides
+quillan.env
+.env
+.env.prod
+certs/
+
+# Distribution / build artifacts
+*.tar.gz
+*.whl
+quillan2.egg-info/

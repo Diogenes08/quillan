@@ -1,0 +1,16 @@
+Given this story outline, create a dependency map showing which beats depend on which.
+
+A beat depends on another if it requires that beat's events to have happened first.
+Beats in the same chapter section typically depend on the prior beat in sequence.
+
+Output JSON:
+{{
+  "dependencies": {{
+    "C1-S1-B1": [],
+    "C1-S1-B2": ["C1-S1-B1"],
+    ...
+  }}
+}}
+
+Outline:
+{outline}

@@ -1,0 +1,20 @@
+Update all three story continuity artifacts for this beat.
+
+Current Summary:
+{summary}
+
+Current Open Threads:
+{threads}
+
+Current Ledger (tail):
+{ledger_tail}
+
+New beat ({beat_id}) prose:
+{prose_excerpt}
+
+Return JSON with exactly these three keys:
+{{
+  "summary": "<updated summary, max {summary_max} chars>",
+  "threads": "<updated open-threads markdown list, max {threads_max} chars>",
+  "ledger_entry": "<new ledger entry for {beat_id}, 2-4 bullet points>"
+}}

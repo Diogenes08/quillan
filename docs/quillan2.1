@@ -1,0 +1,1000 @@
+.TH QUILLAN2 1 "2026\-03\-13" "quillan2 1.1.0" "User Commands"
+.\" ===================================================================
+.SH NAME
+quillan2 \- filesystem\-driven AI story generation engine
+.\" ===================================================================
+.SH SYNOPSIS
+.B quillan2
+[\fIGLOBAL OPTIONS\fR]
+.I COMMAND
+[\fICOMMAND OPTIONS\fR]
+.\" ===================================================================
+.SH DESCRIPTION
+.B quillan2
+turns a short idea file into a fully planned and drafted long\-form story.
+It calls LLM providers (OpenAI, xAI, Google Gemini) via LiteLLM to produce
+world\-building documents, a beat\-by\-beat outline, individual beat
+specifications, and finally polished prose \(em all stored as human\-readable
+YAML and Markdown files on disk.
+.PP
+Stories are organised in a four\-level hierarchy:
+.RS 4
+.B world
+\(-> canon \(-> series \(-> story
+.RE
+.PP
+All generated files live under a single
+.I data directory
+(default:
+.IR ./quillan_data )
+and are fully editable between pipeline stages.
+.\" ===================================================================
+.SH COMMANDS
+.\" -------------------------------------------------------------------
+.SS create \fIIDEA_FILE\fR
+Read
+.I IDEA_FILE
+and use an LLM to generate the full story planning structure.
+No prose is written at this stage.
+Generated files include:
+.RS 4
+.TP
+.B Universe_Bible.md
+World\-building rules and lore.
+.TP
+.B Canon_Rules.md / World_Axioms.md
+Hard and soft rules governing the story world.
+.TP
+.B Canon_Packet.md
+Compressed world context injected into every beat draft.
+.TP
+.B Creative_Brief.yaml
+Voice, tone, themes, and motifs that govern the prose style.
+.TP
+.B Story_Spine.yaml
+Act structure, turning points, and per\-beat tension curve.
+.TP
+.B Character_Arcs.yaml
+Per\-character arc, motivation, and transformation notes.
+.TP
+.B Subplot_Register.yaml
+Active subplots and their status at each beat.
+.TP
+.B Conflict_Map.yaml
+Internal and external conflicts driving each act.
+.TP
+.B Outline.yaml
+Chapter and beat outline (the story blueprint).
+.TP
+.B beat_spec.yaml
+Per\-beat planning and narrative constraints (one per beat).
+.TP
+.B dependency_map.json
+Which beats must be written before which others.
+.RE
+.PP
+If the idea file is short or vague, a
+.I Creative_Brief_Interview.md
+is generated and the command pauses for you to fill in answers.
+Re\-run after completing it, or pass
+.B \-\-no\-interview
+to skip the interview.
+.PP
+After
+.BR create ,
+review and optionally edit the generated YAML files, then run
+.B draft
+to write the actual prose.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-no\-interview
+Skip the creative brief interview even if the idea is vague.
+.RE
+.\" -------------------------------------------------------------------
+.SS draft \fISTORY\fR
+Draft prose for the beats of an existing story structure.
+.I STORY
+must have been created with
+.B create
+first.
+.PP
+The pipeline runs in two phases:
+.RS 4
+.TP
+.B Phase\ 1\ (parallel)
+For each batch of independent beats: bundle context, write prose, audit quality.
+Up to
+.B QUILLAN_MAX_PARALLEL
+beats are processed concurrently (default: 3).
+.TP
+.B Phase\ 2\ (serial)
+Extract state changes from each draft, apply them, update continuity
+(summary, threads, ledger) in a single batched LLM call.
+.RE
+.PP
+Beats are scheduled in dependency order so each beat has access to the
+accumulated story state of all preceding beats.
+Already\-drafted beats are skipped unless
+.B \-\-force
+is given.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-beats \fIMODE\fR
+.I all
+(default) to draft every beat, an integer to draft only that many,
+or a comma\-separated list of beat IDs such as
+.IR "C1\-S1\-B1,C2\-S1\-B3" .
+.TP
+.B \-\-force
+Re\-draft beats that already have a
+.IR Beat_Draft.md .
+.TP
+.B \-\-cascade
+Also re\-draft every beat that transitively depends on the selected beats.
+Implies
+.BR \-\-force .
+.TP
+.B \-\-stale\-only
+Re\-draft only beats whose spec file is newer than their draft.
+Implies
+.BR \-\-force .
+Can be combined with
+.BR \-\-cascade .
+.TP
+.B \-v ", " \-\-verbose
+Print one progress line per beat as it is drafted.
+.TP
+.B \-\-stream
+Write a live Markdown preview to
+.I <story>.live.md
+during drafting, updated after each beat completes.
+.TP
+.B \-\-dry\-run
+Print which beats would be drafted without making any LLM calls or writes.
+.RE
+.\" -------------------------------------------------------------------
+.SS quickdraft \fIIDEA_FILE\fR
+Equivalent to running
+.B create
+immediately followed by
+.BR draft .
+Useful for rapid prototyping when you do not need to review the planning
+files before writing prose.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-beats \fIMODE\fR
+.I all
+(default) or an integer to limit the number of beats drafted.
+.TP
+.B \-\-no\-interview
+Skip the creative brief interview even for vague ideas.
+.TP
+.B \-\-force
+Re\-draft beats that already have a draft.
+.TP
+.B \-v ", " \-\-verbose
+Print one progress line per beat.
+.TP
+.B \-\-stream
+Write a live Markdown preview during drafting.
+.RE
+.\" -------------------------------------------------------------------
+.SS publish \fIIDEA_FILE\fR
+The fully automated pipeline: idea file \(-> planning \(-> draft \(-> export.
+Equivalent to running
+.BR create ,
+.BR draft ,
+and
+.B export
+back to back with no intermediate review.
+.PP
+If the idea is short or vague, a
+.I Creative_Brief_Interview.md
+is generated and the command pauses. Fill in the answers and re\-run, or pass
+.B \-\-no\-interview
+to infer voice and themes directly.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-format \fIFMT\fR
+One of
+.BR markdown ,
+.BR epub " (default), "
+.BR docx ,
+.BR pdf ,
+.BR mobi ,
+or
+.BR azw3 .
+.TP
+.B \-\-no\-interview
+Skip the creative brief interview even for vague ideas.
+.TP
+.B \-\-cover / \-\-no\-cover
+Generate an AI cover image (default: on). Requires
+.BR OPENAI_API_KEY .
+Disable with
+.B \-\-no\-cover
+to skip cover generation.
+.TP
+.B \-\-beats \fIMODE\fR
+.I all
+(default) or an integer to limit the number of beats drafted.
+.TP
+.B \-\-force
+Re\-draft beats that already have a draft.
+.TP
+.B \-\-stream
+Write a live Markdown preview during drafting.
+.TP
+.B \-\-dry\-run
+Print the plan without making API calls.
+.TP
+.B \-v ", " \-\-verbose
+Print one progress line per beat.
+.RE
+.\" -------------------------------------------------------------------
+.SS estimate \fISTORY\fR
+Print a token and cost estimate for drafting
+.I STORY
+without making any LLM calls.
+Reads the dependency map and all beat specs to compute optimistic and
+pessimistic USD cost ranges based on the current model pricing table.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-beats \fIMODE\fR
+Limit the estimate to a subset of beats (same syntax as
+.BR draft ).
+.TP
+.B \-\-force
+Estimate cost including already\-drafted beats (by default those are excluded).
+.TP
+.B \-\-json
+Output the estimate as JSON instead of human\-readable text.
+.RE
+.\" -------------------------------------------------------------------
+.SS export \fISTORY\fR
+Assemble beat drafts in outline order and export as a finished manuscript.
+Output is written to the story's
+.I export/
+subdirectory.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-format \fIFMT\fR
+One of:
+.RS 4
+.TP
+.B markdown
+Plain Markdown (default, no extra tools needed).
+.TP
+.B epub
+EPUB e\-book. Requires
+.BR pandoc (1).
+.TP
+.B docx
+Microsoft Word. Requires
+.BR pandoc (1).
+.TP
+.B pdf
+PDF. Requires
+.BR pandoc (1)
+and a LaTeX engine
+.RB ( pdflatex (1)
+or
+.BR xelatex (1)).
+.TP
+.B mobi ", " azw3
+Kindle formats. Requires
+.BR pandoc (1)
+and
+.BR ebook-convert (1)
+from Calibre.
+.TP
+.B audiobook
+Narrated M4B audiobook (or ZIP of chapter MP3s if
+.BR ffmpeg (1)
+is unavailable).
+Requires the
+.B OPENAI_API_KEY
+and uses the OpenAI TTS API.
+Must be generated via a job first (see
+.B serve
+for web\-based generation).
+.RE
+.RE
+.\" -------------------------------------------------------------------
+.SS cover \fISTORY\fR
+Generate or assign a cover image for
+.IR STORY .
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-image \fIPATH\fR
+Use an existing image file instead of generating one via DALL\-E 3.
+.TP
+.B \-\-author \fINAME\fR
+Author name for spine and cover text overlay.
+.TP
+.B \-\-regen
+Regenerate even if a cover image already exists.
+.RE
+.\" -------------------------------------------------------------------
+.SS status \fISTORY\fR
+Show planning and drafting progress for
+.IR STORY .
+Prints which planning artifacts exist, how many beats have specs and drafts,
+what export files have been produced, and the estimated cost of the most
+recent run (if telemetry is enabled).
+No LLM calls or writes are made.
+.\" -------------------------------------------------------------------
+.SS list
+Print a table of all stories across the data directory.
+Columns: world, canon, series, story name, total beats, drafted percentage,
+and number of export files.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-world \fINAME\fR
+Filter output to a specific world.
+.TP
+.B \-\-canon \fINAME\fR
+Filter to a specific canon.
+.TP
+.B \-\-series \fINAME\fR
+Filter to a specific series.
+.RE
+.\" -------------------------------------------------------------------
+.SS regen\-specs \fISTORY\fR
+Delete and regenerate beat specs using the current planning artifacts
+(Creative Brief, Story Spine, Character Arcs).
+Use after editing high\-level planning files to propagate changes into all
+beat specs without losing prose drafts or continuity data.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-beats \fIMODE\fR
+.I all
+(default), an integer N (first N beats), or a comma\-separated list of
+beat IDs such as
+.IR "C1\-S1\-B1,C1\-S1\-B3" .
+.RE
+.\" -------------------------------------------------------------------
+.SS delete \fISTORY\fR
+Permanently delete
+.I STORY
+and all its files from the data directory.
+Asks for confirmation unless
+.B \-\-yes
+is given.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-yes
+Skip the confirmation prompt.
+.RE
+.\" -------------------------------------------------------------------
+.SS tui \fISTORY\fR
+Launch an interactive terminal workspace for
+.IR STORY .
+Browse beats, read and edit prose and beat specs, review all planning
+artifacts, trigger LLM redrafts, and write in author mode — all from
+the terminal.
+.PP
+Requires the
+.B tui
+optional dependency:
+.RS 4
+pip install quillan2[tui]
+.RE
+.PP
+.B Keybindings:
+.RS 4
+.TP
+.B j / k
+Move to the next / previous beat in the list.
+.TP
+.B e
+Toggle in\-app edit mode. On exit the draft is saved automatically.
+Word count is shown in the title bar while editing.
+.TP
+.B h
+Toggle author mode. Like edit mode, but
+.B Ctrl\-S
+also runs Phase 2 state extraction and continuity update in the background.
+The context panel refreshes when the sync completes.
+.TP
+.B Ctrl\-S
+Save the current draft (stays in edit / author mode).
+In author mode, also triggers state sync.
+.TP
+.B E
+Open the current beat draft in
+.B $EDITOR
+(external editor, fallback).
+.TP
+.B s
+Open the current beat spec YAML in
+.BR $EDITOR .
+Context panel refreshes on return.
+.TP
+.B r
+Force\-redraft the selected beat using the LLM in the background.
+Shows progress in the title bar; reloads the draft on completion.
+.TP
+.B p
+Open the planning review screen \(em a tabbed viewer/editor showing
+Creative Brief, Outline, Story Spine, Character Arcs, Subplots, and Conflicts.
+.B Ctrl\-S
+saves the active tab.
+.B q
+or
+.B Escape
+returns to the main workspace.
+.TP
+.B l
+Lock or unlock the selected beat.
+A locked beat is skipped by
+.BR "draft \-\-force" .
+The TUI shows a padlock indicator next to locked beats.
+.TP
+.B a
+Toggle the Story Spine arc view in the context panel.
+Shows per\-beat tension levels with the current beat highlighted.
+.TP
+.B q
+Quit the TUI.
+.RE
+.\" -------------------------------------------------------------------
+.SS serve
+Start a FastAPI web server with a REST API and background job queue.
+Supports user registration, JWT authentication, async story creation,
+and a public story library with fork support.
+.PP
+Requires the
+.B web
+optional dependency:
+.RS 4
+pip install quillan2[web]
+.RE
+.PP
+.B QUILLAN_JWT_SECRET
+must be set to a random string before starting in any non\-development context.
+Generate one with:
+.RS 4
+openssl rand \-hex 32
+.RE
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-host \fIHOST\fR
+Network interface to bind (default:
+.BR 127.0.0.1 ).
+Use
+.B 0.0.0.0
+to accept connections from other machines.
+.TP
+.B \-\-port \fIPORT\fR
+TCP port (default:
+.BR 8000 ).
+.TP
+.B \-\-dev
+Allow starting with the default JWT secret (localhost development only).
+Never use on a shared or internet\-facing server.
+.RE
+.\" -------------------------------------------------------------------
+.SS selftest
+Run built\-in diagnostics with no API keys or network access required.
+Verifies that core modules (paths, I/O, validation, token counting,
+dependency graph, state patching, configuration) all work correctly.
+Exits with status
+.B 0
+if all checks pass,
+.B 1
+if any fail. Run this after installation.
+.\" -------------------------------------------------------------------
+.SS doctor
+Check system readiness: Python version, required and optional packages,
+external tools (pandoc, calibre, ffmpeg), API key connectivity, data
+directory permissions, and available disk space.
+Exits with status
+.B 0
+if all checks pass,
+.B 1
+if any required check fails.
+Run after installation and when debugging connectivity problems.
+.\" -------------------------------------------------------------------
+.SS runs
+List recent draft runs with token counts and estimated cost.
+Reads telemetry JSON files from
+.IR quillan_data/.runs/ .
+No LLM calls are made.
+.\" -------------------------------------------------------------------
+.SS import\-story \fIFILE\fR
+Ingest an existing manuscript
+.RI ( .md
+or
+.IR .docx )
+as a new story, splitting it into beats and creating stub planning
+documents.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-story \fINAME\fR
+Story name (default: derived from filename).
+.TP
+.B \-\-target\-words \fIN\fR
+Target words per beat when clustering paragraphs (default: 500).
+.TP
+.B \-\-plan
+Also run the full planning pipeline to generate a Universe Bible,
+Character Arcs, and other planning artifacts.
+.RE
+.\" -------------------------------------------------------------------
+.SS lock\-beat \fISTORY\fR \fIBEAT_ID\fR
+Protect a beat from being overwritten by
+.BR "draft \-\-force" .
+Locked beats are shown with a padlock indicator in the TUI.
+.\" -------------------------------------------------------------------
+.SS unlock\-beat \fISTORY\fR \fIBEAT_ID\fR
+Remove the lock from a beat, allowing
+.B draft \-\-force
+to overwrite it.
+.\" -------------------------------------------------------------------
+.SS versions \fISTORY\fR \fIBEAT_ID\fR
+List saved draft versions for a beat, newest first.
+Each version is identified by an ISO\-8601 UTC timestamp.
+.\" -------------------------------------------------------------------
+.SS restore\-beat \fISTORY\fR \fIBEAT_ID\fR \fIVERSION\fR
+Restore a beat draft to a previous saved version.
+The current draft is snapshotted before the restore so the action is
+itself undoable.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-diff
+Show a unified diff of the version versus the current draft before asking
+for confirmation.
+.TP
+.B \-\-force
+Skip the confirmation prompt.
+.RE
+.\" -------------------------------------------------------------------
+.SS restore\-state \fISTORY\fR [\fICHECKPOINT\fR]
+Restore the story\(aqs continuity state from a checkpoint bundle.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-list
+List available checkpoints and exit.
+.RE
+.\" -------------------------------------------------------------------
+.SS show\-outline \fISTORY\fR
+Print the outline for
+.I STORY
+as YAML to standard output.
+No LLM calls are made.
+.\" -------------------------------------------------------------------
+.SS edit\-outline \fISTORY\fR
+Open the outline for
+.I STORY
+in
+.BR $EDITOR .
+Saves on exit.
+Run
+.B draft \-\-stale\-only
+afterwards to re\-draft beats whose specs are now out of date.
+.\" -------------------------------------------------------------------
+.SS add\-beat \fISTORY\fR
+Insert a new beat into an existing chapter, rebuild the dependency map,
+and regenerate the beat spec.
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-chapter \fIN\fR
+Chapter number to append the beat to (required).
+.TP
+.B \-\-goal \fITEXT\fR
+Narrative goal for the new beat (required).
+.TP
+.B \-\-title \fITEXT\fR
+Optional short display title for the beat.
+.RE
+.\" -------------------------------------------------------------------
+.SS add\-sample \fISTORY\fR \fIFILE\fR
+Register a prose sample file as a style reference for
+.IR STORY .
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-extract\-profile
+After registering the sample, run style fingerprint extraction and write
+.IR style_profile.yaml .
+.RE
+.\" -------------------------------------------------------------------
+.SS character\-voice \fISTORY\fR \fICHARACTER\fR
+Generate or update a dialogue voice profile for
+.IR CHARACTER .
+The profile is stored in
+.I dialogue/<character>.yaml
+and is automatically included in beat context bundles where the character appears.
+.\" -------------------------------------------------------------------
+.SS revise \fISTORY\fR \fIBEAT_ID\fR
+Ask the LLM to revise an existing beat draft, applying targeted notes.
+The current draft is snapshotted first so the revision is undoable with
+.BR restore\-beat .
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-notes \fITEXT\fR
+Revision instructions for the LLM (required).
+.RE
+.\" -------------------------------------------------------------------
+.SS continuity\-check \fISTORY\fR
+Scan drafted prose for continuity errors: character detail mismatches,
+prop timeline violations, dropped subplot threads, and factual
+inconsistencies with planning documents.
+.PP
+Results are written to
+.IR continuity/drift_report.json .
+.PP
+.B Options:
+.RS 4
+.TP
+.B \-\-llm
+Also perform a deep LLM\-assisted check in addition to the fast pure\-Python scan.
+.RE
+.\" -------------------------------------------------------------------
+.SS hooks \fISTORY\fR
+List all plugin hooks installed for
+.IR STORY ,
+grouped by event name and discovery directory.
+Supported events:
+.BR pre_create ,
+.BR post_create ,
+.BR pre_draft ,
+.BR post_draft ,
+.BR pre_export ,
+.BR post_export .
+.\" ===================================================================
+.SH GLOBAL OPTIONS
+These options appear before the command name and apply to all commands.
+.TP
+.B \-\-world \fINAME\fR
+World name \(em a shared universe that stories live inside.
+Using the same world name reuses existing world\-building documents.
+Default:
+.BR default .
+.TP
+.B \-\-canon \fINAME\fR
+Canon name \(em an alternate timeline or continuity within a world.
+Default:
+.B default
+or
+.BR QUILLAN_CANON .
+.TP
+.B \-\-series \fINAME\fR
+Series name \(em a story arc grouping within a canon.
+Default:
+.B default
+or
+.BR QUILLAN_SERIES .
+.TP
+.B \-\-data\-dir \fIPATH\fR
+Root directory where all story data is stored.
+Default:
+.B ./quillan_data
+or
+.BR QUILLAN_DATA_DIR .
+.TP
+.B \-\-config \fIPATH\fR
+Path to a
+.IR .env \-format
+configuration file containing API keys and settings.
+.\" ===================================================================
+.SH ENVIRONMENT
+.SS API Keys
+.TP
+.B OPENAI_API_KEY
+API key for OpenAI (planning stage; also used for audiobook TTS).
+.TP
+.B XAI_API_KEY
+API key for xAI / Grok (draft stage by default).
+.TP
+.B GEMINI_API_KEY
+API key for Google Gemini (forensic/audit stage by default).
+.SS Web Server
+.TP
+.B QUILLAN_JWT_SECRET
+Secret key used to sign JWT tokens for the web API.
+Required when running
+.B serve
+outside of
+.B \-\-dev
+mode. Generate with:
+.IR "openssl rand \-hex 32" .
+.SS Data & Storage
+.TP
+.B QUILLAN_DATA_DIR
+Root data directory. Default:
+.BR ./quillan_data .
+.TP
+.B QUILLAN_CANON
+Default canon name. Default:
+.BR default .
+.TP
+.B QUILLAN_SERIES
+Default series name. Default:
+.BR default .
+.SS LLM Providers and Models
+Each pipeline stage
+.RB ( planning ", " draft ", " forensic )
+has a provider and three model tiers (0\~=\~fast/cheap, 1\~=\~medium, 2\~=\~best).
+Quillan2 starts with tier\~0 and escalates to higher tiers on validation failure.
+.TP
+.B QUILLAN_PLANNING_PROVIDER
+Provider for the planning stage. Default:
+.BR openai .
+.TP
+.B QUILLAN_DRAFT_PROVIDER
+Provider for the draft stage. Default:
+.BR xai .
+.TP
+.B QUILLAN_FORENSIC_PROVIDER
+Provider for the forensic/audit stage. Default:
+.BR gemini .
+.TP
+.B QUILLAN_PLANNING_MODEL_TIER0 / TIER1 / TIER2
+Model names for planning stage tiers.
+Defaults:
+.BR gpt\-4o\-mini ,
+.BR gpt\-4o ,
+.BR gpt\-4o .
+.TP
+.B QUILLAN_DRAFT_MODEL_TIER0 / TIER1 / TIER2
+Model names for draft stage tiers.
+Defaults:
+.BR grok\-2\-mini ,
+.BR grok\-2 ,
+.BR grok\-2 .
+.TP
+.B QUILLAN_FORENSIC_MODEL_TIER0 / TIER1 / TIER2
+Model names for forensic stage tiers.
+Defaults:
+.BR gemini\-1.5\-flash ,
+.BR gemini\-1.5\-pro ,
+.BR gemini\-2.0\-pro .
+.SS Local LLM Support
+Set any of these to route a pipeline stage to a local OpenAI\-compatible
+server (Ollama, vLLM, LM Studio, etc.).
+When set, no remote API key is required for that stage.
+.TP
+.B QUILLAN_PLANNING_API_BASE
+Base URL for the planning stage (e.g.\&
+.IR http://localhost:11434/v1 ).
+.TP
+.B QUILLAN_DRAFT_API_BASE
+Base URL for the draft stage.
+.TP
+.B QUILLAN_FORENSIC_API_BASE
+Base URL for the forensic/audit stage.
+.TP
+.B QUILLAN_STRUCT_API_BASE
+Base URL for the struct (structured extraction) stage.
+.SS Text\-to\-Speech (Audiobook)
+.TP
+.B QUILLAN_TTS_MODEL
+OpenAI TTS model to use. Default:
+.BR tts\-1 .
+.TP
+.B QUILLAN_TTS_VOICE
+Voice name for OpenAI TTS. Default:
+.BR alloy .
+Available voices:
+.BR alloy ", " echo ", " fable ", " onyx ", " nova ", " shimmer .
+.SS Execution
+.TP
+.B QUILLAN_MAX_PARALLEL
+Maximum concurrent beat drafts (default:
+.BR 3 ).
+.TP
+.B QUILLAN_RUN_MAX_COST_USD
+Abort the run if the estimated API cost exceeds this value in USD
+(default:
+.BR 0 \ =\ no\ limit).
+.TP
+.B QUILLAN_RUN_MAX_CALLS
+Abort the run after this many LLM calls (default:
+.BR 0 \ =\ no\ limit).
+.TP
+.B QUILLAN_LLM_CALL_TIMEOUT
+Seconds to wait for a single LLM call before treating it as a timeout
+and escalating (default:
+.BR 120 ;
+.BR 0 \ =\ no\ timeout).
+.TP
+.B QUILLAN_MAX_PROMPT_TOKENS
+Token budget per LLM call; context is trimmed if it exceeds this
+(default:
+.BR 32768 ).
+.TP
+.B QUILLAN_LLM_CACHE
+Set to
+.B false
+to disable LLM response caching (default:
+.BR true ).
+Caching saves money on reruns; the cache is keyed by SHA\-256 of
+(provider, model, system prompt, user prompt).
+.TP
+.B QUILLAN_DISTILL_CONTINUITY
+Set to
+.B 1
+to enable LLM\-based continuity summary distillation (default: disabled).
+.TP
+.B QUILLAN_TELEMETRY
+Set to
+.B false
+to disable per\-run telemetry JSON (default:
+.BR true ).
+.\" ===================================================================
+.SH FILES
+.TP
+.I quillan_data/worlds/<world>/
+World\-level planning documents shared across all stories in this world.
+.TP
+.I .../worlds/<world>/canons/<canon>/Character_Registry.yaml
+Canon\-level character registry: accumulated character state from all
+completed stories in this canon. Updated automatically after each draft.
+.TP
+.I .../canons/<canon>/series/<series>/stories/<story>/
+Story root directory containing all generated artefacts.
+.TP
+.I .../stories/<story>/structure/
+Planning artifacts: Outline.yaml, dependency_map.json, Creative_Brief.yaml,
+Story_Spine.yaml, Character_Arcs.yaml, Subplot_Register.yaml, Conflict_Map.yaml.
+.TP
+.I .../stories/<story>/structure/Outline.yaml
+Master beat ordering. Export and the TUI use this, not the filesystem order.
+.TP
+.I .../stories/<story>/structure/dependency_map.json
+Beat dependency graph used for parallel scheduling.
+.TP
+.I .../stories/<story>/beats/<beat_id>/Beat_Draft.md
+Prose output for a single beat. Human\-editable at any time.
+.TP
+.I .../stories/<story>/beats/<beat_id>/Beat_Draft.partial.md
+Temporary file written during LLM streaming. Removed when the draft completes.
+.TP
+.I .../stories/<story>/continuity/current_state.yaml
+Running story state: characters, world state, events. Updated after each beat.
+.TP
+.I .../stories/<story>/continuity/Summary.md
+Rolling story summary maintained by the continuity aggregator.
+.TP
+.I .../stories/<story>/continuity/Threads.yaml
+Open narrative threads. Updated after each beat.
+.TP
+.I .../stories/<story>/export/
+Assembled manuscripts and audiobook files.
+.TP
+.I .../stories/<story>/beats/<beat_id>/versions/
+Timestamped snapshots of the beat draft, created automatically before each overwrite.
+.TP
+.I quillan_data/.cache/
+LLM response cache, keyed by SHA\-256 of (provider, model, system prompt, user prompt).
+.TP
+.I quillan_data/.runs/telemetry_*.json
+Per\-run token counts, provider calls, and timing.
+.TP
+.I quillan_data/.web/quillan.db
+SQLite database used by the web server (users, stories, jobs).
+.\" ===================================================================
+.SH EXAMPLES
+.SS Plan, review, then draft
+.nf
+echo "A botanist discovers that plants can think" > idea.txt
+quillan2 \-\-world sf create idea.txt
+# Review and edit quillan_data/worlds/sf/.../stories/idea/structure/Outline.yaml
+quillan2 \-\-world sf draft idea
+quillan2 \-\-world sf export idea \-\-format docx
+.fi
+.SS Rapid prototype
+.nf
+quillan2 \-\-world sf quickdraft idea.txt \-\-beats 5
+quillan2 \-\-world sf export idea
+.fi
+.SS Incremental drafting with live preview
+.nf
+quillan2 \-\-world sf draft idea \-\-beats 10 \-\-stream \-\-verbose
+# Read idea.live.md while it writes...
+quillan2 \-\-world sf draft idea    # continue from beat 11
+.fi
+.SS Re\-draft after editing specs
+.nf
+# Edit a beat spec, then re\-draft that beat and everything that follows it
+quillan2 \-\-world sf draft idea \-\-beats C2\-S1\-B1 \-\-cascade
+.fi
+.SS Audiobook export
+.nf
+quillan2 \-\-world sf export idea \-\-format audiobook
+.fi
+.SS Kindle export (requires Calibre)
+.nf
+quillan2 \-\-world sf export idea \-\-format mobi
+.fi
+.SS Interactive terminal workspace
+.nf
+quillan2 \-\-world sf tui idea
+# Press p to review/edit planning artifacts
+# Press r to redraft the selected beat
+# Press h to enter author mode (Ctrl\-S syncs state)
+.fi
+.SS Verify installation and system readiness
+.nf
+quillan2 selftest
+quillan2 \-\-config quillan.env doctor
+.fi
+.SS Import an existing manuscript
+.nf
+quillan2 \-\-config quillan.env import\-story draft.docx \-\-plan
+.fi
+.SS Lock a beat and view version history
+.nf
+quillan2 \-\-world sf lock\-beat idea C1\-S1\-B1
+quillan2 \-\-world sf versions idea C1\-S1\-B1
+quillan2 \-\-world sf restore\-beat idea C1\-S1\-B1 20260101T120000z \-\-diff
+.fi
+.SS Check run costs
+.nf
+quillan2 runs
+.fi
+.SS Using a config file
+.nf
+cat > ~/.quillan.env <<EOF
+OPENAI_API_KEY=sk\-...
+XAI_API_KEY=xai\-...
+GEMINI_API_KEY=...
+QUILLAN_MAX_PARALLEL=5
+EOF
+quillan2 \-\-config ~/.quillan.env \-\-world noir create my_idea.txt
+.fi
+.SS Web server
+.nf
+export QUILLAN_JWT_SECRET=$(openssl rand \-hex 32)
+quillan2 serve \-\-host 0.0.0.0 \-\-port 8080
+.fi
+.\" ===================================================================
+.SH SEE ALSO
+.BR pandoc (1),
+.BR ebook-convert (1),
+.BR ffmpeg (1),
+.BR python3 (1)
+.PP
+Project home and issue tracker:
+.I https://github.com/quillan/quillan2
+.\" ===================================================================
+.SH BUGS
+Report bugs at the project issue tracker listed above.
+.\" ===================================================================
+.SH AUTHOR
+The Quillan Project contributors.
