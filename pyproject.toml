@@ -25,7 +25,6 @@ dev = [
     "ruff",
     "mypy",
     "types-aiofiles",
-    "types-python-jose",
 ]
 
 [project.scripts]
