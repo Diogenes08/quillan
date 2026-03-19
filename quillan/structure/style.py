@@ -1,4 +1,4 @@
-"""Style fingerprint extraction for Quillan2.
+"""Style fingerprint extraction for Quillan.
 
 Reads samples.md, calls the LLM to extract a structured style profile,
 and writes style_profile.yaml to the story's style_reference directory.

@@ -17,7 +17,7 @@ def _paths(tmp_path: Path) -> Paths:
 
 
 def _base(tmp_path: Path) -> Settings:
-    return Settings(data_dir=tmp_path, llm_cache=False, telemetry=False)
+    return Settings(_env_file=(), data_dir=tmp_path, llm_cache=False, telemetry=False)
 
 
 # ── No override files — returns base unchanged ────────────────────────────────

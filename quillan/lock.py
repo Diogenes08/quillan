@@ -25,7 +25,7 @@ def _require_fcntl() -> None:
     if not _FCNTL_AVAILABLE:
         raise NotImplementedError(
             "File locking requires fcntl (Linux/macOS only). "
-            "On Windows, run Quillan2 under WSL."
+            "On Windows, run Quillan under WSL."
         )
 
 

@@ -1,4 +1,4 @@
-"""Quillan2 — filesystem-driven AI story generation engine."""
+"""Quillan — filesystem-driven AI story generation engine."""
 
 try:
     from importlib.metadata import version, PackageNotFoundError

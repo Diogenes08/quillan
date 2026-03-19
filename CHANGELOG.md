@@ -1,7 +1,25 @@
 # Changelog
 
-All notable changes to Quillan2 are documented here.
+All notable changes to Quillan are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), versioned per [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.3.0] — 2026-03-19
+
+### Core Engine
+
+- **Rate floor** (`llm_min_call_interval`) — new setting enforces a minimum delay between API calls; prevents free-tier RPM overruns (e.g. `QUILLAN_LLM_MIN_CALL_INTERVAL=5` for Gemini free tier)
+- **Improved 429 backoff** — base wait raised from 5s → 65s for rate-limit errors; ensures at least one full Gemini per-minute quota window clears before retry; now logs a warning with attempt count
+
+### Config
+
+- `quillan.env.example` updated with new rate settings and clearer comments
+- `README.md` rewritten — accurate install steps, web-app pointer, TUI references removed
+
+### Package
+
+- Completed `quillan2` → `quillan` rename across all imports, env prefixes, and entry points
 
 ---
 

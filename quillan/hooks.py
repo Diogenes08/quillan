@@ -1,4 +1,4 @@
-"""Plugin/Hook System for Quillan2 — F9.
+"""Plugin/Hook System for Quillan — F9.
 
 Hooks are executable shell scripts that fire at key pipeline events. They are
 discovered in three directories, searched in order (all three fire — not

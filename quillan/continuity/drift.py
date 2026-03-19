@@ -1,4 +1,4 @@
-"""Continuity drift detection for Quillan2 stories.
+"""Continuity drift detection for Quillan stories.
 
 Two-phase analysis:
   Phase 1 (pure Python, always runs):

@@ -1,4 +1,4 @@
-"""Multi-provider TTS audiobook export for Quillan2.
+"""Multi-provider TTS audiobook export for Quillan.
 
 Supported providers (set QUILLAN_TTS_PROVIDER):
   openai      — OpenAI TTS (tts-1 / tts-1-hd).  Requires OPENAI_API_KEY.

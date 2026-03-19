@@ -259,3 +259,68 @@ def test_validate_subplot_register_missing_subplots(tmp_path):
     p.write_text(yaml.dump({"other": "data"}))
     with pytest.raises(ValueError, match="Missing required keys"):
         validate_subplot_register(p)
+
+
+# ── scrub_secrets ──────────────────────────────────────────────────────────────
+
+def test_scrub_google_key_in_url():
+    from quillan.validate import scrub_secrets
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDQyh5XQUur6KteUNSW_TJAJHED1g9MTTE"
+    result = scrub_secrets(url)
+    # The key must not appear — either URL-param or token pattern fires first.
+    assert "AIzaSyDQyh5XQUur6KteUNSW_TJAJHED1g9MTTE" not in result
+    assert "[REDACTED]" in result
+
+
+def test_scrub_google_key_standalone():
+    from quillan.validate import scrub_secrets
+    msg = "Error authenticating with key AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ123456"
+    result = scrub_secrets(msg)
+    assert "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ123456" not in result
+    assert "AIza[REDACTED]" in result
+
+
+def test_scrub_openai_key():
+    from quillan.validate import scrub_secrets
+    msg = "api_key=sk-abcdefghijklmnopqrstuvwxyz12345678901234"
+    result = scrub_secrets(msg)
+    assert "sk-abcdefghijklmnopqrstuvwxyz12345678901234" not in result
+    assert "sk-[REDACTED]" in result
+
+
+def test_scrub_anthropic_key():
+    from quillan.validate import scrub_secrets
+    msg = "Using key sk-ant-api03-abcdefghijklmnopqrstuvwxyz"
+    result = scrub_secrets(msg)
+    assert "sk-ant-api03-abcdefghijklmnopqrstuvwxyz" not in result
+    assert "sk-ant-[REDACTED]" in result
+
+
+def test_scrub_xai_key():
+    from quillan.validate import scrub_secrets
+    msg = "xai-abcdefghijklmnopqrstuvwxyz123456"
+    result = scrub_secrets(msg)
+    assert "xai-abcdefghijklmnopqrstuvwxyz123456" not in result
+    assert "xai-[REDACTED]" in result
+
+
+def test_scrub_url_query_param():
+    from quillan.validate import scrub_secrets
+    msg = "GET /v1?api_key=supersecretvalue123456 HTTP/1.1"
+    result = scrub_secrets(msg)
+    assert "supersecretvalue123456" not in result
+    assert "api_key=[REDACTED]" in result
+
+
+def test_scrub_leaves_safe_text_unchanged():
+    from quillan.validate import scrub_secrets
+    msg = "Rate limit exceeded. Retry in 30 seconds."
+    assert scrub_secrets(msg) == msg
+
+
+def test_scrub_resend_key():
+    from quillan.validate import scrub_secrets
+    msg = "Resend key re_abcdefghijklmnopqrstuvwxyz1234567890"
+    result = scrub_secrets(msg)
+    assert "re_abcdefghijklmnopqrstuvwxyz1234567890" not in result
+    assert "re_[REDACTED]" in result

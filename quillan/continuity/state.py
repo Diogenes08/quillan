@@ -1,4 +1,4 @@
-"""State patch extraction and application for Quillan2 continuity."""
+"""State patch extraction and application for Quillan continuity."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Cover image generation for Quillan2 stories."""
+"""Cover image generation for Quillan stories."""
 
 from __future__ import annotations
 

@@ -299,7 +299,7 @@ async def _draft_and_audit_beat(
 
     from quillan.draft.draft import draft_beat
     from quillan.draft.audit import mega_audit
-    from quillan.llm import _RateLimitError
+    from quillan.llm import _RateLimitError, LLMError
 
     drafted_tokens = 0
     max_attempts = settings.draft_audit_retries + 1
@@ -310,7 +310,7 @@ async def _draft_and_audit_beat(
                 on_chunk=on_chunk,
             )
             if not ok:
-                break
+                raise LLMError(f"LLM call failed for beat {beat_id} (attempt {attempt + 1})")
 
             # Capture token count for progress display
             if verbose:

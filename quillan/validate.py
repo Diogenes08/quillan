@@ -1,4 +1,4 @@
-"""YAML/JSON schema validators for Quillan2 artifacts."""
+"""YAML/JSON schema validators for Quillan artifacts."""
 
 from __future__ import annotations
 
@@ -143,6 +143,37 @@ def sanitize_story_name(raw: str, *, fallback: str = "story", max_len: int = 60)
 
 
 _BEAT_ID_RE = re.compile(r"^C\d+-S\d+-B\d+$")
+
+
+# ── Secret scrubbing ──────────────────────────────────────────────────────────
+
+# Simple token patterns: most-specific prefix first so sk-ant- matches before sk-.
+_SECRET_TOKENS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"sk-ant-[A-Za-z0-9_\-]{10,}", re.ASCII), "sk-ant-[REDACTED]"),
+    (re.compile(r"sk-[A-Za-z0-9_\-]{20,}", re.ASCII), "sk-[REDACTED]"),
+    (re.compile(r"AIza[A-Za-z0-9_\-]{20,}", re.ASCII), "AIza[REDACTED]"),
+    (re.compile(r"xai-[A-Za-z0-9_\-]{10,}", re.ASCII), "xai-[REDACTED]"),
+    (re.compile(r"re_[A-Za-z0-9_\-]{20,}", re.ASCII), "re_[REDACTED]"),
+]
+# URL query params: ?key=VALUE or &api_key=VALUE — keep param name, redact value.
+_URL_PARAM_RE = re.compile(
+    r"([?&](key|api_key|apikey|token)=)[^&\s\"'<>\n]{6,}", re.ASCII
+)
+# Authorization: Bearer VALUE
+_BEARER_RE = re.compile(r"(Authorization:\s*Bearer\s+)[A-Za-z0-9_\-\.]{10,}", re.ASCII)
+
+
+def scrub_secrets(text: str) -> str:
+    """Return *text* with known API key patterns replaced by ``[REDACTED]``.
+
+    Applied to all error messages before they are stored, logged, or sent to
+    clients — prevents credential leakage via exception tracebacks.
+    """
+    for pattern, replacement in _SECRET_TOKENS:
+        text = pattern.sub(replacement, text)
+    text = _URL_PARAM_RE.sub(r"\1[REDACTED]", text)
+    text = _BEARER_RE.sub(r"\1[REDACTED]", text)
+    return text
 
 
 def validate_beat_id(beat_id: str) -> bool:

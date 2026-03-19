@@ -1,4 +1,4 @@
-"""Per-run structured telemetry logging for Quillan2."""
+"""Per-run structured telemetry logging for Quillan."""
 
 from __future__ import annotations
 

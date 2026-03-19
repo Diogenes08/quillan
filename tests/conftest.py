@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for Quillan2 tests."""
+"""Shared pytest fixtures for Quillan tests."""
 
 from __future__ import annotations
 

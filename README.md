@@ -1,8 +1,8 @@
-# Quillan2
+# Quillan
 
 **AI-assisted story generation for writers.**
 
-Quillan2 takes a short description of your story idea and uses AI to plan it
+Quillan takes a short description of your story idea and uses AI to plan it
 scene-by-scene, then draft prose for each scene. The result is a full
 manuscript that you can export as a Word document, PDF, EPUB, or Markdown file.
 
@@ -12,7 +12,7 @@ up where you left off at any time.
 
 ---
 
-## What Quillan2 Does
+## What Quillan Does
 
 1. **Plans your story.** From a one-paragraph idea, it builds a world bible,
    a chapter-and-scene outline, and detailed notes for each scene (called
@@ -31,7 +31,7 @@ up where you left off at any time.
 
 ### Python 3.10 or later
 
-Quillan2 is a Python program. Download Python from
+Quillan is a Python program. Download Python from
 [python.org](https://www.python.org/downloads/) if you don't have it. Confirm
 your version:
 
@@ -41,7 +41,7 @@ python3 --version
 
 ### AI API keys
 
-Quillan2 uses AI services from three providers. You need accounts and API keys:
+Quillan uses AI services from three providers. You need accounts and API keys:
 
 | Provider | Used for | Where to get a key |
 |---|---|---|
@@ -50,11 +50,11 @@ Quillan2 uses AI services from three providers. You need accounts and API keys:
 | **Google Gemini** | Quality checking | [aistudio.google.com](https://aistudio.google.com/) |
 
 An API key is a long string of characters that looks something like
-`sk-abc123...`. Think of it as a password that lets Quillan2 use the AI
+`sk-abc123...`. Think of it as a password that lets Quillan use the AI
 service on your behalf. Using these services costs money based on the amount
 of text generated — the defaults are set to use the cheapest models first.
 
-**Using a local LLM instead?** Quillan2 also works with Ollama, vLLM, and
+**Using a local LLM instead?** Quillan also works with Ollama, vLLM, and
 LM Studio. Point each pipeline stage at your local server's base URL:
 
 ```
@@ -77,14 +77,13 @@ extra tools.
 ## Installation
 
 ```bash
-# 1. Create a virtual environment (keeps Quillan2 separate from other Python tools)
+# 1. Create a virtual environment (keeps Quillan separate from other Python tools)
 python3 -m venv quillan_env
 source quillan_env/bin/activate      # macOS / Linux
 # quillan_env\Scripts\activate       # Windows
 
-# 2. Install Quillan2
-pip install -e ".[tui,tokens]"
-# Add [web] if you want the web server: pip install -e ".[tui,tokens,web]"
+# 2. Install Quillan
+pip install -e ".[tokens]"
 
 # 3. Verify the installation (no API keys needed for this step)
 quillan selftest
@@ -101,7 +100,7 @@ must be resolved before the affected features will work.
 ## Setting Up Your API Keys
 
 A template configuration file called `quillan.env.example` is included with
-Quillan2. Copy it to `quillan.env`, then open it in any text editor — it has
+Quillan. Copy it to `quillan.env`, then open it in any text editor — it has
 plain-English instructions for every setting. At minimum, fill in your three
 API keys at the top of the file.
 
@@ -152,7 +151,7 @@ To watch progress as each scene is drafted, add `--verbose`:
 quillan --world scifi publish farm_astronaut.txt --verbose
 ```
 
-**If your idea is vague** (under ~40 words), Quillan2 generates a
+**If your idea is vague** (under ~40 words), Quillan generates a
 `Creative_Brief_Interview.md` and pauses. Fill in your answers, then re-run.
 Or skip the interview entirely:
 ```bash
@@ -229,9 +228,9 @@ quillan --world scifi unlock-beat farm_astronaut C1-S1-B3  # unlock it
 quillan --world scifi lock-beat farm_astronaut --all        # lock every beat
 ```
 
-Locked beats are marked 🔒 in the TUI beat list (press `l` to toggle) and in the web interface.
+Locked beats are marked 🔒 in the web interface and in CLI status output.
 
-**Import an existing manuscript** and turn it into a Quillan2 story (automatic
+**Import an existing manuscript** and turn it into a Quillan story (automatic
 beat splitting by chapter/word count):
 
 ```bash
@@ -384,37 +383,11 @@ quillan --world my_fantasy_world --canon mirror_universe create spinoff.txt
 
 ---
 
-## Interactive Terminal Workspace
+## Web Interface
 
-If you have installed the optional TUI extras (`pip install quillan[tui]`),
-you can write, edit, review, and redraft your story interactively in the terminal:
-
-```bash
-quillan --world scifi tui farm_astronaut
-```
-
-The workspace has three panels: the beat list on the left, draft text in the centre,
-and a context panel on the right showing the current beat's goal, tone, active
-characters, and open narrative threads.
-
-| Key | Action |
-|---|---|
-| `j` / `k` | Next / previous beat |
-| `e` | Toggle edit mode — edit the draft in-app; saves on exit |
-| `h` | Toggle author mode — like edit mode, but `Ctrl+S` also runs state extraction and updates continuity automatically |
-| `Ctrl+S` | Save draft in place (author mode: also syncs story state) |
-| `E` | Open draft in `$EDITOR` (external editor) |
-| `s` | Open beat spec YAML in `$EDITOR` |
-| `r` | Force-redraft the current beat using the LLM in the background |
-| `l` | Toggle beat lock — prevents this beat from being overwritten by future draft runs |
-| `p` | Open the planning review screen — tabbed editor for Brief, Outline, Spine, Arcs, Subplots, Conflicts |
-| `a` | Toggle Story Spine arc view (per-beat tension curve) in the context panel |
-| `q` | Quit |
-
-**Author mode** (`h`) is designed for human writers: every save triggers an AI pass
-that extracts what happened in your prose and updates the continuity record
-(character positions, open threads, world state). The context panel refreshes so
-you can see which threads you just opened or resolved.
+The hosted web app provides a browser-based editor with real-time draft streaming,
+multi-user support, and all export formats. See the
+[quillan-web repository](https://github.com/Diogenes08/quillan-web) for setup.
 
 ---
 
@@ -449,7 +422,7 @@ and the current model pricing table. No API calls are made.
 
 ## Web Interface
 
-Quillan2 includes an optional web server with a browser-based editor:
+Quillan includes an optional web server with a browser-based editor:
 
 ```bash
 pip install "quillan[web]"
@@ -478,7 +451,7 @@ draft progress, and all export formats.
   remaining beat specs before continuing.
 
 - **Reuse your world.** If you write a second story set in the same world,
-  use the same `--world` name. Quillan2 will reuse the universe bible instead
+  use the same `--world` name. Quillan will reuse the universe bible instead
   of generating a new one, keeping your universe consistent.
 
 - **Keep your `.env` file safe.** Your API keys give access to paid services.
@@ -507,7 +480,7 @@ The most commonly used ones:
 ## Troubleshooting
 
 **"selftest" or "doctor" reports a FAIL**
-Re-install: `pip install -e ".[tui,tokens]"` and try again. If a specific
+Re-install: `pip install -e ".[tokens]"` and try again. If a specific
 module fails, check that Python 3.10+ is active. Run `quillan doctor` for a
 detailed breakdown of what is and isn't working.
 
@@ -544,4 +517,4 @@ quillan import-story --help
 
 ---
 
-*Quillan2 is open-source software. All story files it produces belong to you.*
+*Quillan is open-source software. All story files it produces belong to you.*

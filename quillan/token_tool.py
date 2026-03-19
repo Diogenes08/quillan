@@ -1,4 +1,4 @@
-"""Token estimation and sliding-window trimming for Quillan2."""
+"""Token estimation and sliding-window trimming for Quillan."""
 
 from __future__ import annotations
 

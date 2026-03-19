@@ -1,4 +1,4 @@
-# Quillan2 — Quick Reference
+# Quillan — Quick Reference
 
 *From idea to finished manuscript in four commands.*
 

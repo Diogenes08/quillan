@@ -1,4 +1,4 @@
-"""Pre-run cost and token estimation for a Quillan2 draft run.
+"""Pre-run cost and token estimation for a Quillan draft run.
 
 No LLM calls are made — all estimates are derived from local artefacts.
 """

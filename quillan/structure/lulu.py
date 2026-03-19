@@ -1,4 +1,4 @@
-"""Lulu print-on-demand bundle assembly for Quillan2 stories."""
+"""Lulu print-on-demand bundle assembly for Quillan stories."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# Quillan2 — Writer's Guide
+# Quillan — Writer's Guide
 
 *A complete guide for writers who want to tell their story, not wrestle with software.*
 

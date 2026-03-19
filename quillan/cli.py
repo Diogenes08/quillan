@@ -1,4 +1,4 @@
-"""Click CLI entry point for Quillan2."""
+"""Click CLI entry point for Quillan."""
 
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def main(
     data_dir: str | None,
     config_file: str | None,
 ) -> None:
-    """Quillan2 — filesystem-driven AI story generation.
+    """Quillan — filesystem-driven AI story generation.
 
     Turns a short idea file into a fully planned and drafted long-form story.
     Stories are organised in a hierarchy: world → canon → series → story.
@@ -84,7 +84,7 @@ def _require_api_keys(settings: Settings) -> None:
     """Exit with a helpful message if no API keys or local LLM base URLs are configured."""
     if not settings.has_api_keys:
         click.echo(
-            "No API keys configured. Quillan2 needs at least one LLM provider to work.\n"
+            "No API keys configured. Quillan needs at least one LLM provider to work.\n"
             "\n"
             "  Set one of: OPENAI_API_KEY, XAI_API_KEY, GEMINI_API_KEY, ANTHROPIC_API_KEY\n"
             "  Or configure a local LLM with QUILLAN_DRAFT_API_BASE / QUILLAN_PLANNING_API_BASE.\n"
@@ -1395,7 +1395,7 @@ def import_story_cmd(
     target_words: int,
     run_planning: bool,
 ) -> None:
-    """Import an existing manuscript as a Quillan2 story.
+    """Import an existing manuscript as a Quillan story.
 
     Parses MANUSCRIPT_FILE (Markdown, plain text, or DOCX) into chapters and
     beats, writes a Beat_Draft.md for each beat, and generates a stub
@@ -2024,7 +2024,7 @@ def selftest() -> None:
             click.echo(f"  [FAIL] {name}: {exc}")
             failures.append(name)
 
-    click.echo("Running Quillan2 selftest...")
+    click.echo("Running Quillan selftest...")
 
     # paths
     def test_paths():
@@ -2103,9 +2103,9 @@ def selftest() -> None:
     # config
     def test_config():
         from quillan.config import Settings
-        s = Settings(data_dir=Path("/tmp"))
-        assert s.model_for_stage("planning", 0) == "gpt-4o-mini"  # budget
-        assert s.model_for_stage("planning", 1) == "gpt-4o"       # quality escalation
+        s = Settings(_env_file=(), data_dir=Path("/tmp"))
+        assert s.model_for_stage("planning", 0) == "gpt-4.1"       # quality default
+        assert s.model_for_stage("planning", 1) == "gpt-4.1-mini"  # cost fallback
         assert s.provider_for_stage("draft", 0) == "xai"
         assert s.provider_for_stage("draft", 2) == "openai"       # cross-provider escape
         assert s.has_api_keys is False
@@ -2218,7 +2218,7 @@ _JWT_DEFAULT_SECRET = "dev-secret-change-in-production"
                    "Never use this flag on a shared or internet-facing server.")
 @click.pass_context
 def serve(ctx: click.Context, host: str, port: int, dev_mode: bool) -> None:
-    """Start the Quillan2 web API server.
+    """Start the Quillan web API server.
 
     Launches a FastAPI server with a REST API and a background job queue.
     Supports user registration, JWT authentication, and async story creation.
@@ -2266,7 +2266,7 @@ def serve(ctx: click.Context, host: str, port: int, dev_mode: bool) -> None:
     settings: Settings = ctx.obj["settings"]
     os.environ["QUILLAN_DATA_DIR"] = str(settings.data_dir)
 
-    click.echo(f"Starting Quillan2 web server at http://{host}:{port}")
+    click.echo(f"Starting Quillan web server at http://{host}:{port}")
     uvicorn.run("quillan.web.app:app", host=host, port=port, reload=False)
 
 

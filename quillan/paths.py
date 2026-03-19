@@ -1,4 +1,4 @@
-"""Single source of truth for all path construction in Quillan2.
+"""Single source of truth for all path construction in Quillan.
 
 Never construct paths by string concatenation elsewhere — always use this module.
 """

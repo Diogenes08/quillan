@@ -8,6 +8,8 @@ from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from quillan.validate import scrub_secrets
+
 if TYPE_CHECKING:
     from quillan.config import Settings
     from quillan.telemetry import Telemetry
@@ -51,6 +53,7 @@ class LLMClient:
                 if deleted:
                     logger.debug("Pruned %d stale cache entries (ttl=%dd)", deleted, settings.cache_ttl_days)
         self._call_count = 0
+        self._last_call_time: float = 0.0  # monotonic; used for min_call_interval
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -81,7 +84,8 @@ class LLMClient:
                     continue  # escalate
 
         raise LLMError(
-            f"All tiers exhausted for stage={stage}. Last error: {last_error or 'unknown'} "
+            f"All tiers exhausted for stage={stage}. Last error: "
+            f"{scrub_secrets(str(last_error)) if last_error else 'unknown'} "
             "Check API keys ('quillan doctor') and connection."
         ) from last_error
 
@@ -289,6 +293,16 @@ class LLMClient:
         max_retries = self.settings.stage_max_retries
         last_err: Exception | None = None
 
+        # Enforce minimum inter-call interval (e.g. free-tier RPM caps)
+        interval = self.settings.llm_min_call_interval
+        if interval > 0:
+            import time as _time
+            elapsed = _time.monotonic() - self._last_call_time
+            gap = interval - elapsed
+            if gap > 0:
+                logger.debug("Rate floor: sleeping %.1fs before API call", gap)
+                await asyncio.sleep(gap)
+
         for attempt in range(max_retries + 1):
             try:
                 kwargs: dict = {
@@ -314,6 +328,8 @@ class LLMClient:
                         "Check connection. If using a local LLM, increase QUILLAN_LLM_CALL_TIMEOUT."
                     )
                 self._call_count += 1
+                import time as _time
+                self._last_call_time = _time.monotonic()
 
                 text = resp.choices[0].message.content or ""
                 input_tokens = getattr(resp.usage, "prompt_tokens", 0) if resp.usage else 0
@@ -348,17 +364,25 @@ class LLMClient:
                 )
 
                 if (is_rate_limit or is_server_err) and attempt < max_retries:
-                    wait = 2 ** attempt * (5 if is_rate_limit else 1)
+                    # Rate limit: need at least one full quota window to clear.
+                    # Gemini free tier resets per-minute, so base of 65s is safe.
+                    # Server errors use a short backoff (1s, 2s, …).
+                    wait = 2 ** attempt * (65 if is_rate_limit else 1)
+                    logger.warning("Backoff %.0fs after %s (attempt %d/%d)",
+                                   wait, "rate limit" if is_rate_limit else "server error",
+                                   attempt + 1, max_retries + 1)
                     await asyncio.sleep(wait)
                     continue
 
                 # Raise RateLimitError with sentinel for adaptive throttling
                 if is_rate_limit:
-                    raise _RateLimitError(str(exc)) from exc
+                    raise _RateLimitError(scrub_secrets(str(exc))) from exc
 
                 raise
 
-        raise LLMError(f"All retries exhausted: {last_err}") from last_err
+        raise LLMError(
+            f"All retries exhausted: {scrub_secrets(str(last_err)) if last_err else 'unknown'}"
+        ) from last_err
 
     # ── Cache helpers ─────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-"""Manuscript ingest for Quillan2 — 5E: Import/Ingest Existing Manuscripts.
+"""Manuscript ingest for Quillan — 5E: Import/Ingest Existing Manuscripts.
 
 Parses an existing Markdown, plain-text, or DOCX manuscript into chapters and
 beats, writes Beat_Draft.md files, generates a stub Outline.yaml and
@@ -275,7 +275,7 @@ async def ingest_manuscript(
     run_planning: bool = False,
     on_progress: Callable[[str], None] | None = None,
 ) -> str:
-    """Ingest a manuscript file and create a Quillan2 story from it.
+    """Ingest a manuscript file and create a Quillan story from it.
 
     Writes Beat_Draft.md files for all inferred beats, generates a stub
     Outline.yaml, beat_spec.yaml files, and a linear dependency_map.json.

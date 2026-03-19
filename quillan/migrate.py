@@ -1,4 +1,4 @@
-"""Data-directory migration system for Quillan2.
+"""Data-directory migration system for Quillan.
 
 Tracks a single integer version in ``<data_dir>/.quillan_version``.
 On startup, ``run_migrations(data_dir)`` applies any pending migrations
@@ -76,7 +76,7 @@ def run_migrations(data_dir: Path) -> None:
     if current > DATA_VERSION:
         _log.warning(
             "Data directory version %d is newer than this build (%d). "
-            "Upgrade Quillan2 or check your data_dir.",
+            "Upgrade Quillan or check your data_dir.",
             current,
             DATA_VERSION,
         )
